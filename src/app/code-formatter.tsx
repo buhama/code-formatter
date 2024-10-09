@@ -44,13 +44,13 @@ export default function CodeFormatter() {
               placeholder="Paste your code here..."
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              className="h-64 font-mono bg-neutral-800 text-white border-neutral-700 focus:border-blue-500 focus:ring-blue-500"
+              className="h-64 font-mono text-white focus:border-blue-500 focus:ring-blue-500"
             />
             <Select value={language} onValueChange={setLanguage}>
-              <SelectTrigger className="bg-gray-800 text-white border-gray-700">
+              <SelectTrigger >
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
-              <SelectContent className="bg-gray-800 text-white border-gray-700">
+              <SelectContent>
                 <SelectItem value="javascript">JavaScript</SelectItem>
                 <SelectItem value="python">Python</SelectItem>
                 <SelectItem value="java">Java</SelectItem>
@@ -58,7 +58,7 @@ export default function CodeFormatter() {
                 <SelectItem value="ruby">Ruby</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={handleCopyImage} className="w-full bg-blue-600 hover:bg-blue-700">
+            <Button onClick={handleCopyImage} className="w-full">
               <Download className="mr-2 h-4 w-4" /> Download as Image
             </Button>
           </div>
