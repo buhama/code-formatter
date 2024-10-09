@@ -57,28 +57,44 @@ export default function CodeFormatter() {
             ref={previewRef}
             className="relative aspect-square overflow-hidden rounded-lg shadow-2xl"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-600 opacity-50 blur-2xl" />
-            <div className="absolute inset-0 bg-gray-900 bg-opacity-75" />
-            <div className="relative h-full overflow-hidden p-6 flex items-center justify-center">
-              <SyntaxHighlighter
-                language={language}
-                style={atomDark}
-                customStyle={{
-                  margin: 0,
-                  padding: '1rem',
-                  borderRadius: '0.5rem',
-                  fontSize: '0.875rem',
-                  lineHeight: '1.25rem',
-                  maxHeight: '100%',
-                  width: '100%',
-                  overflowX: 'auto',
-                  overflowY: 'auto',
-                }}
-                wrapLines={true}
-                wrapLongLines={true}
-              >
-                {code || 'Paste your code to see the preview'}
-              </SyntaxHighlighter>
+            {/* Updated background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-sky-500 to-orange-400 animate-gradient-x" />
+            <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" />
+            
+            {/* Window-like container */}
+            <div className="relative h-full overflow-hidden p-8 flex flex-col">
+              {/* Window header */}
+              <div className="bg-gray-800 rounded-t-lg p-2 mb-2 flex items-center">
+                <div className="flex space-x-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                  <div className="w-3 h-3 rounded-full bg-green-500" />
+                </div>
+                <div className="text-gray-400 text-sm ml-4">{language}.{language === 'javascript' ? 'js' : language === 'python' ? 'py' : 'file'}</div>
+              </div>
+              
+              {/* Code content */}
+              <div className="flex-grow bg-gray-900 rounded-b-lg overflow-hidden">
+                <SyntaxHighlighter
+                  language={language}
+                  style={atomDark}
+                  customStyle={{
+                    margin: 0,
+                    padding: '3rem',
+                    borderRadius: '0 0 0.5rem 0.5rem',
+                    fontSize: '0.875rem',
+                    lineHeight: '1.25rem',
+                    height: '100%',
+                    width: '100%',
+                    overflowX: 'auto',
+                    overflowY: 'auto',
+                  }}
+                  wrapLines={true}
+                  wrapLongLines={true}
+                >
+                  {code || 'Paste your code to see the preview'}
+                </SyntaxHighlighter>
+              </div>
             </div>
           </div>
         </div>
