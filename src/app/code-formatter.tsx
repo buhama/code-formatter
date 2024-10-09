@@ -25,10 +25,19 @@ export default function CodeFormatter() {
     }
   }
 
+  // Add this new function to calculate the container size
+  const getContainerSize = () => {
+    const lineCount = code.split('\n').length;
+    if (lineCount <= 5) return 'h-auto min-h-[200px]';
+    if (lineCount <= 10) return 'h-auto min-h-[300px]';
+    if (lineCount <= 20) return 'h-auto min-h-[400px]';
+    return 'h-auto min-h-[500px] max-h-[800px]';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-neutral-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8 text-white">Code Formatter for Social Media</h1>
+        <h1 className="text-4xl font-bold text-center mb-8 text-white">Code Formatter</h1>
         <div className="flex flex-col gap-8">
           <div className="space-y-4">
             <Textarea
@@ -55,7 +64,7 @@ export default function CodeFormatter() {
           </div>
           <div
             ref={previewRef}
-            className="relative aspect-square overflow-hidden rounded-lg shadow-2xl"
+            className={`relative overflow-hidden rounded-lg shadow-2xl ${getContainerSize()}`}
           >
             {/* Updated background */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-sky-500 to-orange-400 animate-gradient-x" />
@@ -80,7 +89,7 @@ export default function CodeFormatter() {
                   style={atomDark}
                   customStyle={{
                     margin: 0,
-                    padding: '3rem',
+                    padding: '1.5rem',
                     borderRadius: '0 0 0.5rem 0.5rem',
                     fontSize: '0.875rem',
                     lineHeight: '1.25rem',
