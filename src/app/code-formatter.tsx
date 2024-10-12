@@ -4,11 +4,14 @@ import { useState, useRef, useEffect } from 'react'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { toPng } from 'html-to-image'
-import { Download } from 'lucide-react'
+import { Download, Share } from 'lucide-react'
+import { ToastAction } from "@/components/ui/toast"
 
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
 
 
 interface CodeFormatterProps {
@@ -22,6 +25,9 @@ const CodeFormatter: React.FC<CodeFormatterProps> = ({ initialCode = '', initial
   const [language, setLanguage] = useState(initialLanguage)
   const previewRef = useRef<HTMLDivElement>(null)
   const [previewHeight, setPreviewHeight] = useState('auto')
+
+  const { toast } = useToast()
+  const router = useRouter();
 
   useEffect(() => {
     setCode(initialCode)
@@ -69,15 +75,23 @@ const CodeFormatter: React.FC<CodeFormatterProps> = ({ initialCode = '', initial
     const compressedData = Buffer.from(data).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 
     const shareUrl = `${window.location.origin}/share/${compressedData}`
-      navigator.clipboard.writeText(shareUrl)
-        .then(() => {
-          alert('Share link copied to clipboard!')
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => {
+        toast({
+          title: "Share link copied!",
+          description: "The link to your code has been copied to your clipboard.",
+          action: <ToastAction altText="View" onClick={() => window.open(`/share/${compressedData}`, '_blank')}>View</ToastAction>,
         })
-        .catch(err => {
-          console.error('Could not copy text: ', err)
+      })
+      .catch(err => {
+        console.error('Could not copy text: ', err)
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "There was a problem with copying the share link.",
         })
+      })
   }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-neutral-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
@@ -103,12 +117,14 @@ const CodeFormatter: React.FC<CodeFormatterProps> = ({ initialCode = '', initial
                 <SelectItem value="lua">Lua</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={handleCopyImage} className="w-full">
-              <Download className="mr-2 h-4 w-4" /> Download as Image
-            </Button>
-            <Button onClick={handleShareLink} className="w-full">
-              Share Link
-            </Button>
+            <div className="flex gap-4">
+              <Button onClick={handleCopyImage} className="w-full">
+                <Download className="mr-2 h-4 w-4" /> Download as Image
+              </Button>
+              <Button onClick={handleShareLink} className="w-full">
+                <Share className="mr-2 h-4 w-4" /> Share Link
+              </Button>
+            </div>
           </div>
           <div
             ref={previewRef}
