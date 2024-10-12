@@ -10,11 +10,23 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-export default function CodeFormatter() {
-  const [code, setCode] = useState('')
-  const [language, setLanguage] = useState('javascript')
+
+interface CodeFormatterProps {
+  initialCode?: string
+  initialLanguage?: string
+}
+
+
+const CodeFormatter: React.FC<CodeFormatterProps> = ({ initialCode = '', initialLanguage = 'javascript' }) => {
+  const [code, setCode] = useState(initialCode)
+  const [language, setLanguage] = useState(initialLanguage)
   const previewRef = useRef<HTMLDivElement>(null)
   const [previewHeight, setPreviewHeight] = useState('auto')
+
+  useEffect(() => {
+    setCode(initialCode)
+    setLanguage(initialLanguage)
+  }, [initialCode, initialLanguage])
 
   useEffect(() => {
     const updatePreviewHeight = () => {
@@ -52,6 +64,20 @@ export default function CodeFormatter() {
     }
   }
 
+  const handleShareLink = () => {
+    const data = JSON.stringify({ code, language })
+    const compressedData = Buffer.from(data).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+    const shareUrl = `${window.location.origin}/share/${compressedData}`
+      navigator.clipboard.writeText(shareUrl)
+        .then(() => {
+          alert('Share link copied to clipboard!')
+        })
+        .catch(err => {
+          console.error('Could not copy text: ', err)
+        })
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-neutral-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
@@ -79,6 +105,9 @@ export default function CodeFormatter() {
             </Select>
             <Button onClick={handleCopyImage} className="w-full">
               <Download className="mr-2 h-4 w-4" /> Download as Image
+            </Button>
+            <Button onClick={handleShareLink} className="w-full">
+              Share Link
             </Button>
           </div>
           <div
@@ -134,3 +163,5 @@ export default function CodeFormatter() {
     </div>
   )
 }
+
+export default CodeFormatter
