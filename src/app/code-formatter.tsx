@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { toPng } from 'html-to-image'
-import { Copy, Download } from 'lucide-react'
+import { Download } from 'lucide-react'
 
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -13,26 +13,44 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export default function CodeFormatter() {
   const [code, setCode] = useState('')
   const [language, setLanguage] = useState('javascript')
-  const previewRef = useRef(null)
+  const previewRef = useRef<HTMLDivElement>(null)
+  const [previewHeight, setPreviewHeight] = useState('auto')
+
+  useEffect(() => {
+    const updatePreviewHeight = () => {
+      if (previewRef.current) {
+        const lineCount = code.split('\n').length;
+        const baseHeight = 200;
+        const lineHeight = 24; 
+        const padding = 100; 
+        const calculatedHeight = Math.max(baseHeight, lineCount * lineHeight + padding);
+        setPreviewHeight(`${calculatedHeight}px`);
+      }
+    };
+
+    updatePreviewHeight();
+  }, [code]);
 
   const handleCopyImage = async () => {
     if (previewRef.current) {
-      const dataUrl = await toPng(previewRef.current, { cacheBust: true })
-      const link = document.createElement('a')
-      link.download = 'formatted-code.png'
-      link.href = dataUrl
-      link.click()
+      try {
+        const dataUrl = await toPng(previewRef.current, { 
+          cacheBust: true,
+          height: previewRef.current.offsetHeight,
+          style: {
+            transform: 'scale(1)',
+            transformOrigin: 'top left'
+          }
+        })
+        const link = document.createElement('a')
+        link.download = 'formatted-code.png'
+        link.href = dataUrl
+        link.click()
+      } catch (error) {
+        console.error('Error generating image:', error)
+      }
     }
   }
-
-  // Add this new function to calculate the container size
-  const getContainerSize = () => {
-    const lineCount = code.split('\n').length;
-    if (lineCount <= 5) return 'h-auto min-h-[200px]';
-    if (lineCount <= 10) return 'h-auto min-h-[300px]';
-    if (lineCount <= 20) return 'h-auto min-h-[400px]';
-    return 'h-auto min-h-[500px] max-h-[800px]';
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-neutral-900 py-12 px-4 sm:px-6 lg:px-8">
@@ -64,15 +82,13 @@ export default function CodeFormatter() {
           </div>
           <div
             ref={previewRef}
-            className={`relative overflow-hidden rounded-lg shadow-2xl ${getContainerSize()}`}
+            className="relative overflow-hidden rounded-lg shadow-2xl"
+            style={{ height: previewHeight }}
           >
-            {/* Updated background */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-sky-500 to-orange-400 animate-gradient-x" />
             <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" />
             
-            {/* Window-like container */}
             <div className="relative h-full overflow-hidden p-8 flex flex-col">
-              {/* Window header */}
               <div className="bg-gray-800 rounded-t-lg p-2 mb-2 flex items-center">
                 <div className="flex space-x-2">
                   <div className="w-3 h-3 rounded-full bg-red-500" />
@@ -82,7 +98,6 @@ export default function CodeFormatter() {
                 <div className="text-gray-400 text-sm ml-4">{language}.{language === 'javascript' ? 'js' : language === 'python' ? 'py' : 'file'}</div>
               </div>
               
-              {/* Code content */}
               <div className="flex-grow bg-gray-900 rounded-b-lg overflow-hidden">
                 <SyntaxHighlighter
                   language={language}
@@ -95,8 +110,6 @@ export default function CodeFormatter() {
                     lineHeight: '1.25rem',
                     height: '100%',
                     width: '100%',
-                    overflowX: 'auto',
-                    overflowY: 'auto',
                   }}
                   wrapLines={true}
                   wrapLongLines={true}
