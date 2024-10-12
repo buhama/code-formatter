@@ -74,6 +74,7 @@ export default function CodeFormatter() {
                 <SelectItem value="java">Java</SelectItem>
                 <SelectItem value="cpp">C++</SelectItem>
                 <SelectItem value="ruby">Ruby</SelectItem>
+                <SelectItem value="lua">Lua</SelectItem>
               </SelectContent>
             </Select>
             <Button onClick={handleCopyImage} className="w-full">
@@ -95,7 +96,16 @@ export default function CodeFormatter() {
                   <div className="w-3 h-3 rounded-full bg-yellow-500" />
                   <div className="w-3 h-3 rounded-full bg-green-500" />
                 </div>
-                <div className="text-gray-400 text-sm ml-4">{language}.{language === 'javascript' ? 'js' : language === 'python' ? 'py' : 'file'}</div>
+                <div className="text-gray-400 text-sm ml-4">
+                  {language}.
+                  {language === 'javascript' ? 'js' :
+                   language === 'python' ? 'py' :
+                   language === 'lua' ? 'lua' :
+                   language === 'cpp' ? 'cpp' :
+                   language === 'java' ? 'java' :
+                   language === 'ruby' ? 'rb' :
+                   'file'}
+                </div>
               </div>
               
               <div className="flex-grow bg-gray-900 rounded-b-lg overflow-hidden">
